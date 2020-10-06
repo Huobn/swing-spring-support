@@ -6,14 +6,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 将某个视图类中的组件暴露给Spring IOC容器。 若某个字段标注了此注解，
- * 则你可以通过Spring IOC容器索引到这个字段的实例（Nullable）。
+ * 为某个字段添加鼠标进入事件。注意，被标注的字段必须为JComponent类型，否则则注解将不生效。
  * @author callback
  * @version 1.0.0
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Export
+public @interface OnMouseEnter
 {
-    String name() default "";
+    String methodName() default "";
 }

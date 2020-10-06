@@ -6,24 +6,21 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.LinkedList;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
- * Swing-Spring-Application
+ * Swing-Spring-Application，这个类为入口类，Application入口类需要继承此类，并在main方法中调用launch进行启动。
  * @author callback
  * @version 1.0.0
  */
 @Slf4j(topic = "Application")
 public class SwingApplication
 {
-
-
+    /* 线程池参数 */
     private static final int defaultCoreSize = 5;
-    private static final int maximumSize = 8;
-    private static final long keepAliveTime = 3000L;
+    private static final int defaultMaximumSize = 5; /* fixed size pool */
+    private static final long keepAliveTime = 300L;
+    private static final int defaultMaximumWaiting = 10000; /* 线程队列中最大等待线程数 */
 
 
     /* Spring容器上下文对象 */
@@ -32,10 +29,12 @@ public class SwingApplication
 
 
     private static final LinkedList<Runnable> beforeLaunchTaskQueue = new LinkedList<>();
-    private static final BlockingQueue<Runnable> backgroundTaskQueue = new LinkedBlockingQueue<>();
+    private static final BlockingQueue<Runnable> backgroundTaskQueue =
+            new LinkedBlockingQueue<>(defaultMaximumWaiting);
 
     private static final ThreadPoolExecutor backgroundTaskExecutor = new ThreadPoolExecutor(
-            defaultCoreSize, maximumSize, keepAliveTime, TimeUnit.MILLISECONDS, backgroundTaskQueue
+            defaultCoreSize, defaultMaximumSize, keepAliveTime, TimeUnit.MILLISECONDS, backgroundTaskQueue,
+            Executors.defaultThreadFactory(), new ThreadPoolExecutor.AbortPolicy()
     );
 
     public static void addBeforeLaunchTask(Runnable task)
@@ -55,6 +54,11 @@ public class SwingApplication
 
     public static int waitingBackgroundTask() { return backgroundTaskQueue.size(); }
 
+    /**
+     * Swing application启动入口函数
+     * @param appClazz 程序入口类
+     * @param frameClazz 主界面
+     */
     public static void launch(Class<? extends SwingApplication> appClazz, Class<? extends AbstractFrame> frameClazz)
     {
         log.info("Thanks for using swing-spring-support.");

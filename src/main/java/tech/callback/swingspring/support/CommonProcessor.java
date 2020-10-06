@@ -8,13 +8,12 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import tech.callback.swingspring.annoataion.BindController;
-import tech.callback.swingspring.annoataion.Export;
-import tech.callback.swingspring.annoataion.HookMethod;
-import tech.callback.swingspring.annoataion.OnClick;
+import tech.callback.swingspring.annoataion.*;
+import tech.callback.swingspring.handler.MouseActionEventHandler;
 import tech.callback.swingspring.handler.MouseClickEventHandler;
 
 import javax.swing.*;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,7 +23,14 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * CommonProcessor用于处理Controller绑定，事件绑定
+ * CommonProcessor通用处理器，核心类。此类将作为组件注入到Spring IOC容器中，通过此组件监听Bean的创建过程，并扩展Bean的属性。
+ *  功能支持：
+ *      - 导出组件到IOC容器
+ *      - 为某个视图组件添加事件监听器
+ *      - 为视图绑定控制器
+ *      - 执行钩子函数
+ * @author callback
+ * @version 1.0.0
  */
 @Slf4j
 public class CommonProcessor implements BeanPostProcessor, ApplicationContextAware
@@ -127,6 +133,86 @@ public class CommonProcessor implements BeanPostProcessor, ApplicationContextAwa
         }
     }
 
+
+    /**
+     * 处理@OnMouse*注解
+     * @param bean SpringBean
+     */
+    private void handleOnMouse(Object bean) throws IllegalAccessException
+    {
+        Field[] declaredFields = bean.getClass().getDeclaredFields();
+        if (declaredFields.length == 0) return;
+
+        /* 遍历bean的所有字段 */
+        for (Field field : declaredFields) {
+            field.setAccessible(true);
+            if (!(field.get(bean) instanceof JComponent)) continue;
+
+            Annotation[] annotations = field.getAnnotations();
+
+            if (annotations.length == 0) continue;
+
+            for (Annotation annotation : annotations) {
+
+                MouseButton button = MouseButton.LEFT;
+                MouseAction action = MouseAction.ENTER;
+                String methodName = null;
+
+                if (annotation instanceof OnMouseEnter) {
+                    final OnMouseEnter enter = (OnMouseEnter) annotation;
+                    methodName = "".equals(enter.methodName()) ?
+                            "on" + upperCaseFirstLetter(field.getName()) + "Mouse" +
+                                    upperCaseFirstLetter(action.toString().toLowerCase())
+                            : enter.methodName();
+                } else if (annotation instanceof OnMouseExit) {
+                    final OnMouseExit exit = (OnMouseExit) annotation;
+                    action = MouseAction.EXIT;
+                    methodName = "".equals(exit.methodName()) ?
+                            "on" + upperCaseFirstLetter(field.getName()) + "Mouse" +
+                                    upperCaseFirstLetter(action.toString().toLowerCase())
+                            : exit.methodName();
+                } else if (annotation instanceof OnMousePress) {
+                    final OnMousePress press = (OnMousePress) annotation;
+                    action = MouseAction.PRESS; button = press.button();
+                    methodName = "".equals(press.methodName()) ?
+                            "on" + upperCaseFirstLetter(field.getName()) + "Mouse" +
+                                    upperCaseFirstLetter(action.toString().toLowerCase())
+                            : press.methodName();
+                } else if (annotation instanceof OnMouseRelease) {
+                    final OnMouseRelease release = (OnMouseRelease) annotation;
+                    action = MouseAction.RELEASE; button = release.button();
+                    methodName = "".equals(release.methodName()) ?
+                            "on" + upperCaseFirstLetter(field.getName()) + "Mouse" +
+                                    upperCaseFirstLetter(action.toString().toLowerCase())
+                            : release.methodName();
+                }
+
+                /* 检查这个Bean是否绑定了Controller，若绑定了Controller，则点击事件的默认处理方法为Controller中的方法 */
+                Object target = Optional.ofNullable(viewAndController.get(bean))
+                        .orElseGet(()->bean);
+
+                if (methodName != null) {
+                    /* 绑定的方法的访问级别必须为公开，否则无法访问, 并且必须有MouseEvent形式参数 */
+                    try {
+                        Method method = target.getClass().getMethod(methodName,DecoratedEvent.class);
+                        /* 添加鼠标事件处理器 */
+                        ((JComponent)field.get(bean)).addMouseListener(
+                                new MouseActionEventHandler(
+                                        target, method, button, action, context
+                                )
+                        );
+                    } catch (NoSuchMethodException e) {
+                        log.warn("Field<{}> mouse event bind unsuccessfully.", field.getName());
+                    }
+                }
+
+            } // end-for
+
+
+        }
+    }
+
+
     /**
      * 处理钩子函数
      * @param bean SpringBean
@@ -155,6 +241,7 @@ public class CommonProcessor implements BeanPostProcessor, ApplicationContextAwa
         handleExport(bean);
         handleBindController(bean);
         handleMouseClickEvent(bean);
+        handleOnMouse(bean);
 
         handleHookMethod(bean); /* 钩子函数处理器，一定要最后执行 */
         return bean;

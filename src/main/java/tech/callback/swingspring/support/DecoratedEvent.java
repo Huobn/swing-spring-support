@@ -6,7 +6,7 @@ import java.awt.*;
 
 /**
  * 装饰之后的Event,凡是通过Swing-Spring-Support注解进行绑定的事件处理的函数，其形式参数必须为此类型。
- *  装饰之后的Event，能够引用到容器上下文，能够细粒度的获取到容器中的组件
+ * 装饰之后的Event，能够引用到容器上下文，能够细粒度的获取到容器中的组件
  * @param <T> Event
  * @author callback
  * @version 1.0.0
