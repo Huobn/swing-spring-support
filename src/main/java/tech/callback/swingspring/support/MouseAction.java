@@ -5,7 +5,8 @@ package tech.callback.swingspring.support;
  */
 public enum MouseAction
 {
-    ENTER(0b1), EXIT(0b10), PRESS(0b100), RELEASE(0b1000),CLICK(0b10000);
+    ENTER(0b1), EXIT(0b10), PRESS(0b100), RELEASE(0b1000),CLICK(0b10000),
+    WHEEL_UP(-1), WHEEL_DOWN(1);
 
     public final int code;
 

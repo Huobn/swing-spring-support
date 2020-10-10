@@ -1,4 +1,4 @@
-package tech.callback.swingspring.annoataion;
+package tech.callback.swingspring.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

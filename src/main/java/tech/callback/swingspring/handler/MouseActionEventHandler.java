@@ -43,7 +43,7 @@ public class MouseActionEventHandler implements MouseListener
         if (MouseAction.PRESS.equals(action)
                 && e.getButton() == button.code) {
             try {
-                handlerRef.invoke(targetRef, new DecoratedEvent<MouseEvent>(e, contextRef));
+                handlerRef.invoke(targetRef, new DecoratedEvent(e, contextRef));
             }catch (IllegalAccessException | InvocationTargetException ex) {
                 ex.printStackTrace();
             }
@@ -57,7 +57,7 @@ public class MouseActionEventHandler implements MouseListener
                 && e.getButton() == button.code) {
 
             try {
-                handlerRef.invoke(targetRef, new DecoratedEvent<MouseEvent>(e, contextRef));
+                handlerRef.invoke(targetRef, new DecoratedEvent(e, contextRef));
             } catch (IllegalAccessException | InvocationTargetException ex) {
                 ex.printStackTrace();
             }
@@ -70,7 +70,7 @@ public class MouseActionEventHandler implements MouseListener
     {
         if (MouseAction.ENTER.equals(action)) {
             try {
-                handlerRef.invoke(targetRef, new DecoratedEvent<MouseEvent>(e, contextRef));
+                handlerRef.invoke(targetRef, new DecoratedEvent(e, contextRef));
             } catch (IllegalAccessException | InvocationTargetException ex) {
                 ex.printStackTrace();
             }
@@ -82,7 +82,7 @@ public class MouseActionEventHandler implements MouseListener
     {
         if (MouseAction.EXIT.equals(action)) {
             try {
-                handlerRef.invoke(targetRef, new DecoratedEvent<MouseEvent>(e, contextRef));
+                handlerRef.invoke(targetRef, new DecoratedEvent(e, contextRef));
             } catch (IllegalAccessException | InvocationTargetException ex) {
                 ex.printStackTrace();
             }

@@ -39,7 +39,7 @@ public class MouseClickEventHandler implements MouseListener
         if (e.getClickCount() == clickCount
                 && e.getButton() == clickButton.code) {
             try {
-                handlerRef.invoke(targetRef, new DecoratedEvent<MouseEvent>(e, contextRef));
+                handlerRef.invoke(targetRef, new DecoratedEvent(e, contextRef));
             } catch (IllegalAccessException | InvocationTargetException ex) {
                 ex.printStackTrace(); /* 打印信息 */
             }

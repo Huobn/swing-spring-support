@@ -1,7 +1,4 @@
-package tech.callback.swingspring.annoataion;
-
-import org.springframework.context.annotation.DependsOn;
-import tech.callback.swingspring.support.SwingApplication;
+package tech.callback.swingspring.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

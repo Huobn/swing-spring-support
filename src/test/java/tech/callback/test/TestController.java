@@ -7,6 +7,6 @@ public class TestController
 {
     public TestController()
     {
-        System.out.println(getClass().getPackage().getName());
+
     }
 }

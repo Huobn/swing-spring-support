@@ -1,14 +1,13 @@
 package tech.callback.swingspring.support;
 
-import org.springframework.context.ApplicationContext;
+import tech.callback.swingspring.annotation.HookMethod;
 
 import javax.swing.*;
-import java.awt.*;
 
 /**
  * 抽象的JFrame类
  */
-public class AbstractFrame extends JFrame
+public abstract class AbstractFrame extends JFrame
 {
     private static final int PREFERRED_WIDTH = 1000;
     private static final int PREFERRED_HEIGHT = 800;
@@ -20,4 +19,5 @@ public class AbstractFrame extends JFrame
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
+    @HookMethod protected void customView(){}
 }

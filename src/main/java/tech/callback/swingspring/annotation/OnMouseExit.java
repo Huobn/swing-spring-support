@@ -1,4 +1,4 @@
-package tech.callback.swingspring.annoataion;
+package tech.callback.swingspring.annotation;
 
 
 import java.lang.annotation.ElementType;
@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
  * @author callback
  * @version 1.0.0
  */
+@EventBase
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OnMouseExit

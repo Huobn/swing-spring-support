@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.concurrent.*;
@@ -82,8 +84,12 @@ public class SwingApplication
             /* 注册通用处理器Bean */
             context.registerBean("commonProcessor", CommonProcessor.class, def->def.setScope("singleton"));
             context.scan(pkg.getName());
-            context.registerBean("mainFrame", frameClazz, def->def.setScope("singleton"));
             context.refresh();
+            String[] forType = context.getBeanNamesForType(frameClazz);
+            if (forType.length == 0) {
+                context.registerBean("mainFrame", frameClazz, def->def.setScope("singleton"));
+                context.refresh();
+            }
             /* 显示界面 */
             context.getBean(frameClazz).setVisible(true);
         } else {
