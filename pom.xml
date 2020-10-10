@@ -6,7 +6,7 @@
 
     <groupId>tech.callback</groupId>
     <artifactId>swing-spring-support</artifactId>
-    <version>1.0.0-RELEASE</version>
+    <version>1.1.2-RELEASE</version>
 
 
     <dependencies>
@@ -52,6 +52,13 @@
             <artifactId>slf4j-jdk14</artifactId>
             <version>1.5.6</version>
             <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13</version>
+            <scope>test</scope>
         </dependency>
 
 
